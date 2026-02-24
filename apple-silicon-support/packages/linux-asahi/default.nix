@@ -1,33 +1,34 @@
-{
-  lib,
-  callPackage,
-  linuxPackagesFor,
-  _kernelPatches ? [ ],
+{ lib
+, callPackage
+, linuxPackagesFor
+, _kernelPatches ? [ ]
+,
 }:
 
 let
   linux-asahi-pkg =
-    {
-      stdenv,
-      lib,
-      fetchFromGitHub,
-      fetchpatch,
-      buildLinux,
-      ...
+    { stdenv
+    , lib
+    , fetchFromGitHub
+    , fetchpatch
+    , buildLinux
+    , ...
     }:
     buildLinux rec {
       inherit stdenv lib;
 
       pname = "linux-asahi";
-      version = "6.18.10";
+      version = "6.18.10+fairydust-${builtins.substring 0 7 src.rev}";
+      ;
       modDirVersion = version;
       extraMeta.branch = "6.18";
 
       src = fetchFromGitHub {
         owner = "AsahiLinux";
         repo = "linux";
-        tag = "asahi-6.18.10-1";
-        hash = "sha256-ToRuhY3OFEJu36tguS6TSYgRkWPUkQRNIyp3Uc/m+8k=";
+        ref = "refs/heads/fairydust";
+        rev = "61b6e714dd19b7bee1c0e6ec4234199e640c2932";
+        hash = lib.fakeHash;
       };
 
       kernelPatches = [

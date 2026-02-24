@@ -25,7 +25,6 @@ let
       src = fetchFromGitHub {
         owner = "AsahiLinux";
         repo = "linux";
-        ref = "refs/heads/fairydust";
         rev = "61b6e714dd19b7bee1c0e6ec4234199e640c2932";
         hash = lib.fakeHash;
       };

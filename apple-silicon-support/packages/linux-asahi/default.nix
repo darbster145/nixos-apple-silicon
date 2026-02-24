@@ -19,7 +19,6 @@ let
 
       pname = "linux-asahi";
       version = "6.18.10+fairydust-${builtins.substring 0 7 src.rev}";
-      ;
       modDirVersion = version;
       extraMeta.branch = "6.18";
 

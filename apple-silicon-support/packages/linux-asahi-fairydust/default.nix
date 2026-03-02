@@ -6,7 +6,7 @@
 }:
 
 let
-  linux-asahi-pkg =
+  linux-asahi-fairydust-pkg =
     {
       stdenv,
       lib,
@@ -18,16 +18,19 @@ let
     buildLinux rec {
       inherit stdenv lib;
 
-      pname = "linux-asahi";
-      version = "6.18.10";
-      modDirVersion = version;
+      pname = "linux-asahi-fairydust";
+      # Use commit hash for experimental branch tracking
+      version = "6.18.10-fairydust-61b6e71";
+      modDirVersion = "6.18.10";
       extraMeta.branch = "6.18";
 
       src = fetchFromGitHub {
         owner = "AsahiLinux";
         repo = "linux";
-        tag = "asahi-6.18.10-1";
-        hash = "sha256-ToRuhY3OFEJu36tguS6TSYgRkWPUkQRNIyp3Uc/m+8k=";
+        # Pinned to tested commit from fairydust branch
+        # This branch adds experimental DP-ALT mode support
+        rev = "61b6e714dd19b7bee1c0e6ec4234199e640c2932";
+        hash = "sha256-5eAgJTKcRdjEFzHDSrh/XReaT6Db9YN2RN1SwOs28NE=";
       };
 
       kernelPatches = [
@@ -59,6 +62,6 @@ let
       ++ _kernelPatches;
     };
 
-  linux-asahi = callPackage linux-asahi-pkg { };
+  linux-asahi-fairydust = callPackage linux-asahi-fairydust-pkg { };
 in
-lib.recurseIntoAttrs (linuxPackagesFor linux-asahi)
+lib.recurseIntoAttrs (linuxPackagesFor linux-asahi-fairydust)

@@ -61,6 +61,7 @@
           linux-asahi = pkgs.linux-asahi.kernel;
           linux-asahi-fairydust = pkgs.linux-asahi-fairydust.kernel;
           linux-asahi-wip = pkgs.linux-asahi-wip.kernel;
+          linux-asahi-wip-j314-dp = pkgs.linux-asahi-wip-j314-dp.kernel;
           inherit (pkgs) uboot-asahi libva-v4l2_request-sofus13;
 
           installer-bootstrap =

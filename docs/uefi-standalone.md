@@ -146,20 +146,21 @@ If everything went well, you will restart into U-Boot with the Asahi Linux and U
 
 Shut down the machine fully. Connect the flash drive with the installer ISO to a USB port. If not using Wi-Fi, connect the Ethernet cable to the network port or adapter as well.
 
-Start the Mac, and U-Boot should start booting from the USB drive automatically. If you've already installed something to the internal NVMe drive, U-Boot will try to boot it first. To instead boot from USB, hit a key to stop autoboot when prompted, then run the command `bootmenu` and select the `usb 0` entry. If no entries are available, exit and use `bootmenu -e` instead. If this command is not available, instead use `setenv boot_targets "usb" ; setenv bootmeths "efi" ; boot`. GRUB will start, then the NixOS installer after a short delay (the default GRUB option is fine).
+Start the Mac, and U-Boot should start booting from the USB drive automatically. If you've already installed something to the internal NVMe drive, U-Boot might try to boot it first.
+To instead boot from USB:
+ - Hit a key to stop autoboot when prompted
+ - Run the command `eficonfig`
+ - Select "Change Boot Order", ensure `usb 0` is on the top (you can use the `+` key to move it to the top).
+ - "Save" boot order, "Quit" `eficonfig`.
+ - Run the `boot` command.
+
+GRUB will start, then the NixOS installer after a short delay (the default GRUB option is fine).
 
 <details>
-  <summary>If "mounting `/dev/root` on `/mnt-root/iso` failed: No such file or directory" during boot…</summary>
+  <summary>If `/dev/disk/by-label/nixos-xx.yy-aarch64` does not mount…</summary>
   
   1. Was the ISO transferred to your flash drive correctly as described above? `dd` is the only correct way to do this. The ISO must be transferred to the drive block device itself, not a partition on the drive.
-  2. There is sometimes a [race condition](https://github.com/nix-community/nixos-apple-silicon/issues/60) which causes booting to fail. Reboot the machine and try again.
-  3. Some flash drives have quirks. Try a different drive, or use the following steps:
-
-      1. Attempt to start the installer normally
-      1. When the boot fails and you are prompted, hit i to start a shell
-      1. Unplug your flash drive, plug it into a different port, then wait 30 seconds
-      1. Run the command `mount -t iso9660 /dev/root /mnt-root/iso`
-      1. Exit the shell by running `exit` to continue the boot process
+  2. Some flash drives have quirks. Try replugging the USB stick if you're already waiting for 30 seconds.
 </details>
 
 You will get a console prompt once booting completes. Run the command `sudo su` to get a root prompt in the installer. If the console font is too small, run the command `setfont ter-v32n` to increase the size.
@@ -247,6 +248,8 @@ Add the `./apple-silicon-support` directory to the imports list and switch off t
 The configuration above is the minimum required to produce a bootable system, but you can further edit the file as desired to perform additional configuration. Uncomment the relevant options and change their values as explained in the file. Note that some advertised features may not work properly at this time. Refer to the [NixOS installation manual](https://nixos.org/manual/nixos/stable/index.html#ch-configuration) for further guidance.
 
 Various non-free non-redistributable peripheral firmware files are required to use system hardware like Wi-Fi, Webcam or ambient light sensor. The Asahi Installer grabs these from macOS and stores them on the EFI system partition when it is created. The NixOS installer loads them from there while booting so that all hardware is available during installation. By default, the Apple Silicon support module will automatically reference the files in the EFI system partition and incorporate them into your configuration to be managed by the normal NixOS mechanisms.
+
+If you're using flakes, you cannot point to paths outside your flake. In that case, `hardware.firmware.peripheralFirmwareDirectory` needs to be explicitly set to a directory containing `firmware.cpio` (copied from your ESP's `vendorfw/`).
 
 To update these Linux-loaded peripheral firmware files, use the Asahi Installer. From your MacOS installation:
 
